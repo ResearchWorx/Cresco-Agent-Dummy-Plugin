@@ -15,7 +15,7 @@ public class PluginImplementation implements PluginInterface {
 	
 	public PluginImplementation()
 	{
-		pluginName = "Dummy Plugin";
+		pluginName = "dummyPlugin";
 	}
 	   public String getName()
 	   {
@@ -40,7 +40,7 @@ public class PluginImplementation implements PluginInterface {
 			   version = "Unable to determine Version";
 		   }
 		   
-		   return version;
+		   return pluginName + "." + version;
 	   }
 	   public String getCommandSet()
 	   {

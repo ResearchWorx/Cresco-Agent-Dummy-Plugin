@@ -10,6 +10,13 @@
     <connection>scm:git:git://github.com/researchworx/Cresco-Agent-Dummy-Plugin.git</connection>
   </scm>
   
+  <dependencies>
+  	<dependency>
+	<groupId>commons-configuration</groupId>
+	<artifactId>commons-configuration</artifactId>
+	<version>1.10</version>
+</dependency>
+  </dependencies>  
     <build>
   <plugins>
       <plugin>
