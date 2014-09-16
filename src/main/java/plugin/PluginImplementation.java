@@ -6,23 +6,27 @@ import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
+import org.apache.commons.configuration.SubnodeConfiguration;
+
 import plugins.PluginInterface;
 
 
-public abstract class PluginImplementation implements PluginInterface {
+public class PluginImplementation implements PluginInterface {
 
 	public String pluginName;
+	public SubnodeConfiguration config;
 	
 	public PluginImplementation()
 	{
 		pluginName = "dummyPlugin";
 	}
-	   public String getName()
-	   {
+	public String getName()
+	{
 		   return pluginName; 
-	   }
-	   public String getVersion()
-	   {
+	}
+	   
+    public String getVersion()
+    {
 		   String version;
 		   try{
 		   String jarFile = PluginImplementation.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -42,9 +46,17 @@ public abstract class PluginImplementation implements PluginInterface {
 		   
 		   return pluginName + "." + version;
 	   }
+	   
 	   public String getCommandSet()
 	   {
 		   return "Dummy Plugin does nothing";
+	   }
+	   
+	   public boolean initialize(SubnodeConfiguration config) 
+	   {
+		   this.config = config;
+		   System.out.println("Init completed");
+		   return true;
 	   }
 	   
 	
