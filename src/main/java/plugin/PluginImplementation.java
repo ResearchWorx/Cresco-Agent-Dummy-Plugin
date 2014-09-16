@@ -9,7 +9,7 @@ import java.util.jar.Manifest;
 import plugins.PluginInterface;
 
 
-public class PluginImplementation implements PluginInterface {
+public abstract class PluginImplementation implements PluginInterface {
 
 	public String pluginName;
 	
