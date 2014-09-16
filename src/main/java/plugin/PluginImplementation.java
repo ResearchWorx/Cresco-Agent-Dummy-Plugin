@@ -8,17 +8,22 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
+import plugincore.PluginEngine;
 import plugins.PluginInterface;
 
 
 public class PluginImplementation implements PluginInterface {
 
+	public static PluginEngine pe;
 	public String pluginName;
 	public SubnodeConfiguration config;
 	
+	
 	public PluginImplementation()
 	{
-		pluginName = "dummyPlugin";
+		pe = new PluginEngine();
+		pluginName="DummyPlugin";
+		
 	}
 	public String getName()
 	{
@@ -32,7 +37,8 @@ public class PluginImplementation implements PluginInterface {
 		   String jarFile = PluginImplementation.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		   File file = new File(jarFile.substring(5, (jarFile.length() -2)));
            FileInputStream fis = new FileInputStream(file);
-           JarInputStream jarStream = new JarInputStream(fis);
+           @SuppressWarnings("resource")
+		   JarInputStream jarStream = new JarInputStream(fis);
 		   Manifest mf = jarStream.getManifest();
 		   
 		   Attributes mainAttribs = mf.getMainAttributes();
@@ -47,18 +53,14 @@ public class PluginImplementation implements PluginInterface {
 		   return pluginName + "." + version;
 	   }
 	   
-	   public String getCommandSet()
-	   {
-		   return "Dummy Plugin does nothing";
-	   }
+	public String getCommandSet()
+    {
+		return "Dummy Plugin does nothing";
+	}
 	   
-	   public boolean initialize(SubnodeConfiguration config) 
-	   {
-		   this.config = config;
-		   System.out.println("Init completed");
-		   return true;
-	   }
-	   
-	
+	public boolean initialize(SubnodeConfiguration config) 
+	{
+	   return ((PluginEngine) pe).initialize(config);
+    }	
 }
 
