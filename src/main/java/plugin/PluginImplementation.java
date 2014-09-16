@@ -14,10 +14,8 @@ import plugins.PluginInterface;
 
 public class PluginImplementation implements PluginInterface {
 
-	public static PluginEngine pe;
+	public PluginEngine pe;
 	public String pluginName;
-	public SubnodeConfiguration config;
-	
 	
 	public PluginImplementation()
 	{
@@ -29,7 +27,7 @@ public class PluginImplementation implements PluginInterface {
 	{
 		   return pluginName; 
 	}
-	   
+  
     public String getVersion()
     {
 		   String version;
@@ -61,6 +59,7 @@ public class PluginImplementation implements PluginInterface {
 	public boolean initialize(SubnodeConfiguration config) 
 	{
 	   return ((PluginEngine) pe).initialize(config);
+	   
     }	
 }
 
