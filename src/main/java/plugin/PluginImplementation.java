@@ -1,12 +1,6 @@
 package plugin;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.jar.Attributes;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
-
 import org.apache.commons.configuration.SubnodeConfiguration;
 
 import channels.LogEvent;
@@ -17,40 +11,20 @@ import plugins.PluginInterface;
 public class PluginImplementation implements PluginInterface {
 
 	public PluginEngine pe;
-	public String pluginName;
 	
 	public PluginImplementation()
 	{
-		pe = new PluginEngine();
-		pluginName="DummyPlugin";
+		pe = new PluginEngine(); //actual plugin code
 		
 	}
 	public String getName()
 	{
-		   return pluginName; 
+		   return ((PluginEngine) pe).getName(); 
 	}
     public String getVersion()
     {
-		   String version;
-		   try{
-		   String jarFile = PluginImplementation.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		   File file = new File(jarFile.substring(5, (jarFile.length() -2)));
-           FileInputStream fis = new FileInputStream(file);
-           @SuppressWarnings("resource")
-		   JarInputStream jarStream = new JarInputStream(fis);
-		   Manifest mf = jarStream.getManifest();
-		   
-		   Attributes mainAttribs = mf.getMainAttributes();
-           version = mainAttribs.getValue("Implementation-Version");
-		   }
-		   catch(Exception ex)
-		   {
-			   System.out.println(ex);
-			   version = "Unable to determine Version";
-		   }
-		   
-		   return pluginName + "." + version;
-	   }
+    	return ((PluginEngine) pe).getVersion();
+	}
  
 	public String getCommandSet()
     {
@@ -60,7 +34,6 @@ public class PluginImplementation implements PluginInterface {
 	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration config) 
 	{
 	   return ((PluginEngine) pe).initialize(logQueue, config);
-	   
     }	
 }
 
