@@ -31,9 +31,9 @@ public class PluginImplementation implements PluginInterface {
 		return ((PluginEngine) pe).getCommandSet();
 	}
 	   
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration config) 
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj) 
 	{
-	   return ((PluginEngine) pe).initialize(logQueue, config);
+	   return ((PluginEngine) pe).initialize(logQueue, configObj);
     }	
 }
 
