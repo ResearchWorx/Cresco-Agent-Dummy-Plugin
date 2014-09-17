@@ -9,7 +9,6 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import core.WatchDog;
 import plugin.PluginImplementation;
 import channels.LogEvent;
 
@@ -52,16 +51,24 @@ public class PluginEngine {
 		   
 		   return pluginName + "." + version;
 	   }
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj) 
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj)  
 	{
 		this.logQueue = logQueue;
+		try{
 		this.config = new PluginConfig(configObj);
-		
+		}
+		catch(Exception ex)
+		{
+			System.out.println("ERROR IN PLUGIN: " + ex.toString());
+		}
 		
 		logQueue.offer(new LogEvent("INFO",pluginName,"Initializing Plugin"));
 		
 		WatchDog wd = new WatchDog(logQueue,config);
-    	
+		
+		
+		logQueue.offer(new LogEvent("INFO",pluginName,"Watchdog Set"));
+		
 		/*
 		Iterator it = config.getKeys();
 		while (it.hasNext()) {
