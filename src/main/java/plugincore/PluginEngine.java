@@ -1,20 +1,28 @@
 package plugincore;
 
-import java.util.Iterator;
-
-import org.apache.commons.configuration.ConfigurationException;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.commons.configuration.SubnodeConfiguration;
+import channels.LogEvent;
+
 
 
 public class PluginEngine {
 
+	private SubnodeConfiguration config;
+	private ConcurrentLinkedQueue<LogEvent> logQueue;
 	
 	public PluginEngine()
 	{
 		
 	}
-	public boolean initialize(SubnodeConfiguration config) 
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration config) 
 	{
+		this.logQueue = logQueue;
+		this.config = config;
+		
+		logQueue.offer(new LogEvent("INFO","PLUGIN INIT"));
+		
+		/*
 		Iterator it = config.getKeys();
 		while (it.hasNext()) {
 			Object key = it.next();
@@ -22,9 +30,13 @@ public class PluginEngine {
 			//result.put(key.toString(), value);
 			System.out.println(key.toString() + " " + value);
 		}
+		*/
 		return true;
 	}
-	
+	public String getCommandSet()
+    {
+		return "Dummy Plugin is a Dummy";
+    }
 	
 	/*
 	 public int getWatchDogTimer(String pluginID)

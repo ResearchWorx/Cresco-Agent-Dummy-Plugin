@@ -2,12 +2,14 @@ package plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
+import channels.LogEvent;
 import plugincore.PluginEngine;
 import plugins.PluginInterface;
 
@@ -27,7 +29,6 @@ public class PluginImplementation implements PluginInterface {
 	{
 		   return pluginName; 
 	}
-  
     public String getVersion()
     {
 		   String version;
@@ -50,15 +51,15 @@ public class PluginImplementation implements PluginInterface {
 		   
 		   return pluginName + "." + version;
 	   }
-	   
+ 
 	public String getCommandSet()
     {
-		return "Dummy Plugin does nothing";
+		return ((PluginEngine) pe).getCommandSet();
 	}
 	   
-	public boolean initialize(SubnodeConfiguration config) 
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration config) 
 	{
-	   return ((PluginEngine) pe).initialize(config);
+	   return ((PluginEngine) pe).initialize(logQueue, config);
 	   
     }	
 }
