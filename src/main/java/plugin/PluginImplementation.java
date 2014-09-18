@@ -6,6 +6,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 
 import plugincore.PluginEngine;
 import plugins.PluginInterface;
+import shared.CmdEvent;
 import shared.LogEvent;
 
 
@@ -31,7 +32,7 @@ public class PluginImplementation implements PluginInterface {
     {
 		return ((PluginEngine) pe).getCommandSet();
 	}
-	public String executeCommand(String command)
+	public CmdEvent executeCommand(CmdEvent command)
     {
 		return ((PluginEngine) pe).executeCommand(command);
 	}

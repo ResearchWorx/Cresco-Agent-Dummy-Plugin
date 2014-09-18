@@ -10,6 +10,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.configuration.SubnodeConfiguration;
 
 import plugin.PluginImplementation;
+import shared.CmdEvent;
 import shared.LogEvent;
 
 
@@ -70,11 +71,15 @@ public class PluginEngine {
 	}
 	public String getCommandSet()
     {
-		return "echo: echos an input string";
+		return "cmd: <echo> : echos an input string";
     }
-	public String executeCommand(String command)
+	public CmdEvent executeCommand(CmdEvent command)
 	{
+		if(command.getCmdType().equals("echo"))
+		{
+			command.setCmdResult(command.getCmdArg());
+		}
 		return command;
 	}
-	
+		
 }
