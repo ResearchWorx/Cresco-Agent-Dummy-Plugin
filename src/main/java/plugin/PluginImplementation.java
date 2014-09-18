@@ -1,11 +1,12 @@
 package plugin;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import channels.LogEvent;
 import plugincore.PluginEngine;
 import plugins.PluginInterface;
+import shared.LogEvent;
 
 
 public class PluginImplementation implements PluginInterface {
@@ -29,6 +30,10 @@ public class PluginImplementation implements PluginInterface {
 	public String getCommandSet()
     {
 		return ((PluginEngine) pe).getCommandSet();
+	}
+	public String executeCommand(String command)
+    {
+		return ((PluginEngine) pe).executeCommand(command);
 	}
 	   
 	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj) 
