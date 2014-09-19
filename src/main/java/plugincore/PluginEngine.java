@@ -23,8 +23,7 @@ public class PluginEngine {
 	
 	public PluginEngine()
 	{
-		pluginName="DummyPlugin";
-		
+		pluginName="DummyPlugin";	
 	}
 	public String getName()
 	{
@@ -46,7 +45,9 @@ public class PluginEngine {
 		   }
 		   catch(Exception ex)
 		   {
-			   System.out.println(ex);
+			   String msg = "Unable to determine Plugin Version " + ex.toString();
+			   System.err.println(msg);
+			   logQueue.offer(new LogEvent("ERROR",pluginName,msg));
 			   version = "Unable to determine Version";
 		   }
 		   
@@ -56,30 +57,64 @@ public class PluginEngine {
 	{
 		this.logQueue = logQueue;
 		try{
-		this.config = new PluginConfig(configObj);
+			this.config = new PluginConfig(configObj);
+			
+			String msg = "Initializing Plugin: " + getVersion();
+			System.err.println(msg);
+			logQueue.offer(new LogEvent("INFO",pluginName,msg));
+			
+			WatchDog wd = new WatchDog(logQueue,config);
+			
+			return true;
 		}
 		catch(Exception ex)
 		{
-			System.out.println("ERROR IN PLUGIN: " + ex.toString());
+			String msg = "ERROR IN PLUGIN: " + ex.toString();
+			System.err.println(msg);
+			logQueue.offer(new LogEvent("ERROR",pluginName,msg));
+			return false;
 		}
 		
-		logQueue.offer(new LogEvent("INFO",pluginName,"Initializing Plugin: " + getVersion()));
-	
-		WatchDog wd = new WatchDog(logQueue,config);
-		
-		return true;
 	}
 	public String getCommandSet()
     {
-		return "cmd: <echo> : echos an input string";
+		StringBuilder commands = new StringBuilder();
+		commands.append("Plugin: " + pluginName + " commands\n\n");
+		commands.append("echo\t\tEcho's Input String\n");
+		return commands.toString();
     }
-	public CmdEvent executeCommand(CmdEvent command)
+	public CmdEvent executeCommand(CmdEvent ce)
 	{
-		if(command.getCmdType().equals("echo"))
+		if(ce.getCmdType().equals("discover"))
 		{
-			command.setCmdResult(command.getCmdArg());
+			StringBuilder sb = new StringBuilder();
+			sb.append("show\n");
+			sb.append("show_name\n");
+			sb.append("show_version\n");
+			ce.setCmdResult(sb.toString());
 		}
-		return command;
+		else if(ce.getCmdArg().equals("show"))
+		{
+			StringBuilder commands = new StringBuilder();		
+			commands.append("show\t\t Shows Commands\n");
+			commands.append("show name\t\t Shows Plugin Name\n");
+			commands.append("show version\t\t Shows Plugin Version");
+			ce.setCmdResult(commands.toString());
+		}
+		else if(ce.getCmdArg().equals("show_version"))
+		{
+			ce.setCmdResult(getVersion());
+		}
+		else if(ce.getCmdArg().equals("show_name"))
+		{
+			ce.setCmdResult(getVersion());
+		}
+		else
+		{
+			ce.setCmdResult("Plugin Command [" + ce.getCmdType() + "] unknown");
+		}
+	    
+		return ce;
 	}
 		
 }
