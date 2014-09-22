@@ -20,6 +20,7 @@ public class PluginEngine {
 	private PluginConfig config;
 	private ConcurrentLinkedQueue<LogEvent> logQueue;
 	private String pluginName;
+	private String pluginSlot;
 	
 	public PluginEngine()
 	{
@@ -47,23 +48,25 @@ public class PluginEngine {
 		   {
 			   String msg = "Unable to determine Plugin Version " + ex.toString();
 			   System.err.println(msg);
-			   logQueue.offer(new LogEvent("ERROR",pluginName,msg));
+			   logQueue.offer(new LogEvent("ERROR",pluginSlot,msg));
 			   version = "Unable to determine Version";
 		   }
 		   
 		   return pluginName + "." + version;
 	   }
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj)  
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj, String pluginSlot)  
 	{
 		this.logQueue = logQueue;
+		this.pluginSlot = pluginSlot;
+		
 		try{
 			this.config = new PluginConfig(configObj);
 			
 			String msg = "Initializing Plugin: " + getVersion();
 			System.err.println(msg);
-			logQueue.offer(new LogEvent("INFO",pluginName,msg));
+			logQueue.offer(new LogEvent("INFO",pluginSlot,msg));
 			
-			WatchDog wd = new WatchDog(logQueue,config);
+			WatchDog wd = new WatchDog(logQueue,config,pluginSlot);
 			
 			return true;
 		}
@@ -71,35 +74,32 @@ public class PluginEngine {
 		{
 			String msg = "ERROR IN PLUGIN: " + ex.toString();
 			System.err.println(msg);
-			logQueue.offer(new LogEvent("ERROR",pluginName,msg));
+			logQueue.offer(new LogEvent("ERROR",pluginSlot,msg));
 			return false;
 		}
 		
 	}
-	public String getCommandSet()
-    {
-		StringBuilder commands = new StringBuilder();
-		commands.append("Plugin: " + pluginName + " commands\n\n");
-		commands.append("echo\t\tEcho's Input String\n");
-		return commands.toString();
-    }
+	
 	public CmdEvent executeCommand(CmdEvent ce)
 	{
 		if(ce.getCmdType().equals("discover"))
 		{
 			StringBuilder sb = new StringBuilder();
+			sb.append("help\n");
 			sb.append("show\n");
 			sb.append("show_name\n");
 			sb.append("show_version\n");
 			ce.setCmdResult(sb.toString());
 		}
-		else if(ce.getCmdArg().equals("show"))
+		else if(ce.getCmdArg().equals("show") || ce.getCmdArg().equals("help"))
 		{
-			StringBuilder commands = new StringBuilder();		
-			commands.append("show\t\t Shows Commands\n");
-			commands.append("show name\t\t Shows Plugin Name\n");
-			commands.append("show version\t\t Shows Plugin Version");
-			ce.setCmdResult(commands.toString());
+			StringBuilder sb = new StringBuilder();
+			sb.append("\nPlugin " + getName() + " Help\n");
+			sb.append("-\n");
+			sb.append("show\t\t\t\t\t Shows Commands\n");
+			sb.append("show name\t\t\t\t Shows Plugin Name\n");
+			sb.append("show version\t\t\t\t Shows Plugin Version");
+			ce.setCmdResult(sb.toString());
 		}
 		else if(ce.getCmdArg().equals("show_version"))
 		{
@@ -107,13 +107,12 @@ public class PluginEngine {
 		}
 		else if(ce.getCmdArg().equals("show_name"))
 		{
-			ce.setCmdResult(getVersion());
+			ce.setCmdResult(getName());
 		}
 		else
 		{
 			ce.setCmdResult("Plugin Command [" + ce.getCmdType() + "] unknown");
 		}
-	    
 		return ce;
 	}
 		

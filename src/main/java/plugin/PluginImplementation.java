@@ -26,20 +26,15 @@ public class PluginImplementation implements PluginInterface {
     public String getVersion()
     {
     	return ((PluginEngine) pe).getVersion();
-	}
- 
-	public String getCommandSet()
-    {
-		return ((PluginEngine) pe).getCommandSet();
-	}
+	}	
 	public CmdEvent executeCommand(CmdEvent command)
     {
 		return ((PluginEngine) pe).executeCommand(command);
 	}
 	   
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj) 
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj,String pluginSlot) 
 	{
-	   return ((PluginEngine) pe).initialize(logQueue, configObj);
+	   return ((PluginEngine) pe).initialize(logQueue, configObj,pluginSlot);
     }	
 }
 
