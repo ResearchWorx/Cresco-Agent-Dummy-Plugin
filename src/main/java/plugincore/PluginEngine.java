@@ -24,6 +24,7 @@ public class PluginEngine {
 	
 	public PluginEngine()
 	{
+		//change this to the name of your plugin
 		pluginName="DummyPlugin";	
 	}
 	public String getName()
