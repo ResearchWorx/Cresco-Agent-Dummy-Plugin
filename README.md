@@ -7,7 +7,7 @@ Cresco-Agent-Dummy-Plugin
 ---
 ### Install
 
-1. Download/update/confirm a [Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/overview/index.html) (JRE, Java Runtime) 1.6 or greater.
+1. Download/update/confirm avalability of a [Cresco-Agent](http://128.163.188.129:9998/job/Cresco-Agent/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent/) 
 2. Download the [Latest Build](http://128.163.188.129:9998/job/Cresco-Agent-Dummy-Plugin/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent-dummy-plugin/) of the Cresco-Agent. 
 3. Copy _Cresco-Agent.ini.sample_ to _Cresco-Agent.ini_
 4. Modify _Cresco-Agent.ini_ for your enviorment.  Make sure to configure the controll channel.
