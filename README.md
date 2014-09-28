@@ -7,10 +7,9 @@ Cresco-Agent-Dummy-Plugin
 ---
 ### Install
 
-1. Download/update/confirm avalability of a [Cresco-Agent](http://128.163.188.129:9998/job/Cresco-Agent/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent/) 
-2. Download the [Latest Build](http://128.163.188.129:9998/job/Cresco-Agent-Dummy-Plugin/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent-dummy-plugin/) of the Cresco-Agent. 
-3. Copy _Cresco-Agent.ini.sample_ to _Cresco-Agent.ini_
-4. Modify _Cresco-Agent.ini_ for your enviorment.  Make sure to configure the controll channel.
+1. Download/update/confirm avalability of the [Cresco-Agent](http://128.163.188.129:9998/job/Cresco-Agent/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent/) 
+2. Download the [Latest Build](http://128.163.188.129:9998/job/Cresco-Agent-Dummy-Plugin/lastSuccessfulBuild/com.researchworx.cresco$cresco-agent-dummy-plugin/) of the Cresco-Agent-Dummy-Plugin an place it in the plugin subdirectory of the agent directory. 
+4. Modify _Cresco-Agent-Plugins.ini_ to configure and enable your plug-in.
 5. Execute: java -jar  _cresco-agent-\<version\>.jar_ 
 
 ---
