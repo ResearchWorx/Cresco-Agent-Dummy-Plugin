@@ -35,6 +35,10 @@ public class PluginImplementation implements PluginInterface {
 	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj,String pluginSlot) 
 	{
 	   return ((PluginEngine) pe).initialize(logQueue, configObj,pluginSlot);
-    }	
+    }
+	public void shutdown()
+	{
+		   ((PluginEngine) pe).shutdown(); 
+	}
 }
 
