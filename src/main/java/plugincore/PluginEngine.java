@@ -31,7 +31,7 @@ public class PluginEngine {
 	{
 		   return pluginName; 
 	}
-	public String getVersion()
+	public String getVersion() //This should pull the version information from jar Meta data
     {
 		   String version;
 		   try{
@@ -55,6 +55,7 @@ public class PluginEngine {
 		   
 		   return pluginName + "." + version;
 	   }
+	//steps to init the plugin
 	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj, String pluginSlot)  
 	{
 		this.logQueue = logQueue;
