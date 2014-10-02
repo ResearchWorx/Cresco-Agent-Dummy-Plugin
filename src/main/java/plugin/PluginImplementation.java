@@ -27,11 +27,22 @@ public class PluginImplementation implements PluginInterface {
     {
     	return ((PluginEngine) pe).getVersion();
 	}	
-	public CmdEvent executeCommand(CmdEvent command)
+	public CmdEvent incomingCommand(CmdEvent command)
     {
-		return ((PluginEngine) pe).executeCommand(command);
+		return ((PluginEngine) pe).incomingCommand(command);
 	}
-	   
+	public LogEvent incomingLog(LogEvent log)
+    {
+		return ((PluginEngine) pe).incomingLog(log);
+	}
+	
+	   /*
+	public CmdEvent incomingCommand(CmdEvent command);
+	   public CmdEvent outgoingCommand(CmdEvent command);
+	   public LogEvent incomingCommand(LogEvent log);
+	   public LogEvent outgoingCommand(LogEvent log);
+	   */
+	
 	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue,SubnodeConfiguration configObj,String pluginSlot) 
 	{
 	   return ((PluginEngine) pe).initialize(logQueue, configObj,pluginSlot);
@@ -40,5 +51,6 @@ public class PluginImplementation implements PluginInterface {
 	{
 		   ((PluginEngine) pe).shutdown(); 
 	}
+	
 }
 

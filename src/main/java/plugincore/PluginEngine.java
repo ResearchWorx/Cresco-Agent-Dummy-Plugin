@@ -54,6 +54,8 @@ public class PluginEngine {
 			   String msg = "Unable to determine Plugin Version " + ex.toString();
 			   System.err.println(msg);
 			   logQueue.offer(new LogEvent("ERROR",pluginSlot,msg));
+			   
+			   
 			   version = "Unable to determine Version";
 		   }
 		   
@@ -85,8 +87,11 @@ public class PluginEngine {
 		}
 		
 	}
-	
-	public CmdEvent executeCommand(CmdEvent ce)
+	public LogEvent incomingLog(LogEvent le)
+	{
+		return le;
+	}
+	public CmdEvent incomingCommand(CmdEvent ce)
 	{
 		if(ce.getCmdType().equals("discover"))
 		{
