@@ -21,6 +21,7 @@ public class PluginEngine {
 	private ConcurrentLinkedQueue<LogEvent> logQueue;
 	private String pluginName;
 	private String pluginSlot;
+	private String agentName;
 	
 	public PluginEngine()
 	{
@@ -62,10 +63,11 @@ public class PluginEngine {
 		   return pluginName + "." + version;
 	   }
 	//steps to init the plugin
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj, String pluginSlot)  
+	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj, String pluginSlot, String agentName)  
 	{
 		this.logQueue = logQueue;
 		this.pluginSlot = pluginSlot;
+		this.agentName = agentName;
 		
 		try{
 			this.config = new PluginConfig(configObj);
