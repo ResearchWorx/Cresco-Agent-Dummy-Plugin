@@ -1,36 +1,52 @@
 package plugincore;
 
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import plugin.PluginImplementation;
-import shared.CmdEvent;
-import shared.LogEvent;
+import dummyserv.DummyServerEngine;
+import shared.Clogger;
+import shared.MsgEvent;
+import shared.PluginImplementation;
 
 
 
 public class PluginEngine {
 
-	private PluginConfig config;
-	private ConcurrentLinkedQueue<LogEvent> logQueue;
-	private String pluginName;
-	private String pluginSlot;
-	private String agentName;
+	public static PluginConfig config;
+	
+	public static String pluginName;
+	public static String pluginVersion;
+	public static String plugin;
+	public static String agent;
+	public static String region;
+	
+	public static CommandExec commandExec;
+	
+	public static ConcurrentMap<String,MsgEvent> rpcMap;
+	
+	public static ConcurrentLinkedQueue<MsgEvent> logOutQueue;
+	
+	
+	public static Clogger clog;
+
+	public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
 	
 	public PluginEngine()
 	{
-		//change this to the name of your plugin
-		pluginName="DummyPlugin";	
+		pluginName="DummyPlugin";
 	}
 	public void shutdown()
 	{
-		
+		System.out.println("Implement Shutdown in Plugin");
 	}
 	public String getName()
 	{
@@ -53,80 +69,116 @@ public class PluginEngine {
 		   catch(Exception ex)
 		   {
 			   String msg = "Unable to determine Plugin Version " + ex.toString();
-			   System.err.println(msg);
-			   logQueue.offer(new LogEvent("ERROR",pluginSlot,msg));
-			   
-			   
+			   clog.error(msg);
 			   version = "Unable to determine Version";
 		   }
 		   
 		   return pluginName + "." + version;
 	   }
 	//steps to init the plugin
-	public boolean initialize(ConcurrentLinkedQueue<LogEvent> logQueue, SubnodeConfiguration configObj, String pluginSlot, String agentName)  
+	public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue,ConcurrentLinkedQueue<MsgEvent> msgInQueue, SubnodeConfiguration configObj, String region,String agent, String plugin)  
 	{
-		this.logQueue = logQueue;
-		this.pluginSlot = pluginSlot;
-		this.agentName = agentName;
 		
+		commandExec = new CommandExec();
+		rpcMap = new ConcurrentHashMap<String,MsgEvent>();
+		
+		//this.msgOutQueue = msgOutQueue; //send directly to log queue
+		this.msgInQueue = msgInQueue; //messages to agent should go here
+		
+		this.agent = agent;
+		this.plugin = plugin;
+		
+		this.region = region;
 		try{
+			
+			if(msgInQueue == null)
+			{
+				System.out.println("MsgInQueue==null");
+				return false;
+			}
+			
 			this.config = new PluginConfig(configObj);
 			
-			String msg = "Initializing Plugin: " + getVersion();
-			System.err.println(msg);
-			logQueue.offer(new LogEvent("INFO",pluginSlot,msg));
+			//create logger
+			clog = new Clogger(msgInQueue,region,agent,plugin); //send logs directly to outqueue
 			
-			WatchDog wd = new WatchDog(logQueue,config,pluginSlot);
+			String startmsg = "Initializing Plugin: Region=" + region + " Agent=" + agent + " plugin=" + plugin + " version" + getVersion();
+			clog.log(startmsg);
 			
-			return true;
+			
+	    	try
+	    	{
+	    		System.out.println("Starting Dummy Service");
+				DummyServerEngine dummyEngine = new DummyServerEngine();
+				Thread dummyServerThread = new Thread(dummyEngine);
+		        dummyServerThread.start();		    
+	    	}
+	    	catch(Exception ex)
+	    	{
+	    		System.out.println("Unable to Start HTTP Service : " + ex.toString());
+	    	}
+	    	
+	    	/*
+	    	AMPQLogProducer v = new AMPQLogProducer();
+	    	ProducerThread = new Thread(v);
+	    	ProducerThread.start();
+	    	while(!ProducerEnabled)
+	    	{
+	    		Thread.sleep(1000);
+	    		String msg = "Waiting for AMPQProducer Initialization : Region=" + region + " Agent=" + agent + " plugin=" + plugin;
+	    		clog.log(msg);
+	    	}
+	    	*/
+	    	
+	    	
+	    	WatchDog wd = new WatchDog();
+			
+    		return true;
+    		
+		
 		}
 		catch(Exception ex)
 		{
-			String msg = "ERROR IN PLUGIN: " + ex.toString();
-			System.err.println(msg);
-			logQueue.offer(new LogEvent("ERROR",pluginSlot,msg));
+			String msg = "ERROR IN PLUGIN: : Region=" + region + " Agent=" + agent + " plugin=" + plugin + " " + ex.toString();
+			clog.error(msg);
 			return false;
 		}
 		
 	}
-	public LogEvent incomingLog(LogEvent le)
+	
+	public void msgIn(MsgEvent me)
 	{
-		return le;
+		
+		final MsgEvent ce = me;
+		try
+		{
+		Thread thread = new Thread(){
+		    public void run(){
+		
+		    	try 
+		        {
+					MsgEvent re = commandExec.cmdExec(ce);
+					if(re != null)
+					{
+						re.setReturn(); //reverse to-from for return
+						msgInQueue.offer(re); //send message back to queue
+					}
+					
+				} 
+		        catch(Exception ex)
+		        {
+		        	System.out.println("Controller : PluginEngine : msgIn Thread: " + ex.toString());
+		        }
+		    }
+		  };
+		  thread.start();
+		}
+		catch(Exception ex)
+		{
+			System.out.println("Controller : PluginEngine : msgIn Thread: " + ex.toString());        	
+		}
+		
 	}
-	public CmdEvent incomingCommand(CmdEvent ce)
-	{
-		if(ce.getCmdType().equals("discover"))
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.append("help\n");
-			sb.append("show\n");
-			sb.append("show_name\n");
-			sb.append("show_version\n");
-			ce.setCmdResult(sb.toString());
-		}
-		else if(ce.getCmdArg().equals("show") || ce.getCmdArg().equals("help"))
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.append("\nPlugin " + getName() + " Help\n");
-			sb.append("-\n");
-			sb.append("show\t\t\t\t\t Shows Commands\n");
-			sb.append("show name\t\t\t\t Shows Plugin Name\n");
-			sb.append("show version\t\t\t\t Shows Plugin Version");
-			ce.setCmdResult(sb.toString());
-		}
-		else if(ce.getCmdArg().equals("show_version"))
-		{
-			ce.setCmdResult(getVersion());
-		}
-		else if(ce.getCmdArg().equals("show_name"))
-		{
-			ce.setCmdResult(getName());
-		}
-		else
-		{
-			ce.setCmdResult("Plugin Command [" + ce.getCmdType() + "] unknown");
-		}
-		return ce;
-	}
+		
 		
 }

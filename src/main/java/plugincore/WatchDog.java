@@ -1,42 +1,51 @@
 package plugincore;
 
-import java.util.Queue;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import shared.LogEvent;
+import shared.MsgEvent;
+import shared.MsgEventType;
+
 
 
 public class WatchDog {
-	private PluginConfig config;
 	private Timer timer;
-	public Queue<LogEvent> log;
 	private long startTS;
-	public String pluginSlot;	
-	  
-	  public WatchDog(Queue<LogEvent> log, PluginConfig config, String pluginSlot) {
-		  this.config = config;
-		  this.pluginSlot = pluginSlot;
+	private Map<String,String> wdMap;
+	
+	public WatchDog() {
 		  startTS = System.currentTimeMillis();
-		  this.log = log;
 		  timer = new Timer();
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, config.getWatchDogTimer());
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, PluginEngine.config.getWatchDogTimer());
+	      wdMap = new HashMap<String,String>(); //for sending future WD messages
+	      	  
+	      MsgEvent le = new MsgEvent(MsgEventType.INFO,PluginEngine.config.getRegion(),null,null,"WatchDog timer set to " + PluginEngine.config.getWatchDogTimer() + " milliseconds");
+	      le.setParam("src_region", PluginEngine.region);
+		  le.setParam("src_agent", PluginEngine.agent);
+		  le.setParam("src_plugin", PluginEngine.plugin);
+		  le.setParam("dst_region", PluginEngine.region);
+		  PluginEngine.clog.log(le);
 	      
-	      LogEvent le = new LogEvent("INFO",pluginSlot,"WatchDog timer set to " + config.getWatchDogTimer() + " milliseconds");
-		  log.offer(le);
 	  }
 
 
 	class WatchDogTask extends TimerTask {
 	    public void run() {
 	    	
-	        //PluginEngine.this.getVersion(); 
 	    	long runTime = System.currentTimeMillis() - startTS;
-			 LogEvent le = new LogEvent("WATCHDOG",pluginSlot,"Plugin Uptime " + String.valueOf(runTime) + "ms");
-			 log.offer(le);
-	      //timer.cancel(); //Not necessary because we call System.exit
-	      //System.exit(0); //Stops the AWT thread (and everything else)
-	    
+	    	 //wdMap.put("runtime", String.valueOf(runTime));
+	    	 //wdMap.put("timestamp", String.valueOf(System.currentTimeMillis()));
+	    	 MsgEvent le = new MsgEvent(MsgEventType.WATCHDOG,PluginEngine.region,null,null,"WatchDog timer set to " + PluginEngine.config.getWatchDogTimer() + " milliseconds");
+	    	 le.setParam("src_region", PluginEngine.region);
+			 le.setParam("src_agent", PluginEngine.agent);
+			 le.setParam("src_plugin", PluginEngine.plugin);
+			 le.setParam("dst_region", PluginEngine.region);
+			 le.setParam("runtime", String.valueOf(runTime));
+			 le.setParam("timestamp", String.valueOf(System.currentTimeMillis()));
+			 
+			 PluginEngine.clog.log(le);
 	    }
 	  }
 
