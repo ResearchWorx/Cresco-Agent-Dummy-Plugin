@@ -59,6 +59,10 @@ public class PluginConfig {
 	{
 		return configObj.getString("pluginname");
 	}
+	public String getPerfLevel()
+	{
+		return configObj.getString("perflevel");
+	}
 	public String getRegion()
 	{
 		return configObj.getString("region");

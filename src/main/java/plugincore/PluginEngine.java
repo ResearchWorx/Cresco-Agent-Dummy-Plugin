@@ -22,6 +22,7 @@ import shared.PluginImplementation;
 
 public class PluginEngine {
 
+	public static boolean isActive;
 	public static PluginConfig config;
 	
 	public static String pluginName;
@@ -38,6 +39,8 @@ public class PluginEngine {
 	public static ConcurrentLinkedQueue<MsgEvent> logOutQueue;
 	
 	public static WatchDog wd;
+	public static WatchPerf wp;
+	
 	public static Clogger clog;
 
 	public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
@@ -50,7 +53,10 @@ public class PluginEngine {
 	public void shutdown()
 	{
 		System.out.println("Plugin Shutdown : Agent=" + agent + "pluginname=" + plugin);
+		isActive = false;
 		wd.timer.cancel(); //prevent rediscovery
+		wp.timer.cancel(); //prevent rediscovery
+		
 		try
 		{
 			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,null,null,"disabled");
@@ -102,7 +108,7 @@ public class PluginEngine {
 	//steps to init the plugin
 	public boolean initialize(ConcurrentLinkedQueue<MsgEvent> msgOutQueue,ConcurrentLinkedQueue<MsgEvent> msgInQueue, SubnodeConfiguration configObj, String region,String agent, String plugin)  
 	{
-		
+		isActive = true;
 		commandExec = new CommandExec();
 		rpcMap = new ConcurrentHashMap<String,MsgEvent>();
 		rpcc = new RPCCall();
@@ -136,7 +142,8 @@ public class PluginEngine {
 	    		System.out.println("Starting Dummy Service");
 				DummyServerEngine dummyEngine = new DummyServerEngine();
 				Thread dummyServerThread = new Thread(dummyEngine);
-		        dummyServerThread.start();		    
+		        dummyServerThread.start();
+		        
 	    	}
 	    	catch(Exception ex)
 	    	{
@@ -157,7 +164,8 @@ public class PluginEngine {
 	    	
 	    	
 	    	wd = new WatchDog();
-			
+			wp = new WatchPerf();
+	    	
     		return true;
     		
 		
