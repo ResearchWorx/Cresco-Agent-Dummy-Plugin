@@ -15,6 +15,7 @@ import org.apache.commons.configuration.SubnodeConfiguration;
 import dummyserv.DummyServerEngine;
 import shared.Clogger;
 import shared.MsgEvent;
+import shared.MsgEventType;
 import shared.PluginImplementation;
 
 
@@ -32,10 +33,11 @@ public class PluginEngine {
 	public static CommandExec commandExec;
 	
 	public static ConcurrentMap<String,MsgEvent> rpcMap;
+	public static RPCCall rpcc;
 	
 	public static ConcurrentLinkedQueue<MsgEvent> logOutQueue;
 	
-	
+	public static WatchDog wd;
 	public static Clogger clog;
 
 	public static ConcurrentLinkedQueue<MsgEvent> msgInQueue;
@@ -43,10 +45,32 @@ public class PluginEngine {
 	public PluginEngine()
 	{
 		pluginName="DummyPlugin";
+		
 	}
 	public void shutdown()
 	{
-		System.out.println("Implement Shutdown in Plugin");
+		System.out.println("Plugin Shutdown : Agent=" + agent + "pluginname=" + plugin);
+		wd.timer.cancel(); //prevent rediscovery
+		try
+		{
+			MsgEvent me = new MsgEvent(MsgEventType.CONFIG,region,null,null,"disabled");
+			me.setParam("src_region",region);
+			me.setParam("src_agent",agent);
+			me.setParam("src_plugin",plugin);
+			me.setParam("dst_region",region);
+			
+			//msgOutQueue.offer(me);
+			msgInQueue.offer(me);
+			//PluginEngine.rpcc.call(me);
+			System.out.println("Sent disable message");
+		}
+		catch(Exception ex)
+		{
+			String msg2 = "Plugin Shutdown Failed: Agent=" + agent + "pluginname=" + plugin;
+			clog.error(msg2);
+			
+		}
+		
 	}
 	public String getName()
 	{
@@ -81,6 +105,7 @@ public class PluginEngine {
 		
 		commandExec = new CommandExec();
 		rpcMap = new ConcurrentHashMap<String,MsgEvent>();
+		rpcc = new RPCCall();
 		
 		//this.msgOutQueue = msgOutQueue; //send directly to log queue
 		this.msgInQueue = msgInQueue; //messages to agent should go here
@@ -131,7 +156,7 @@ public class PluginEngine {
 	    	*/
 	    	
 	    	
-	    	WatchDog wd = new WatchDog();
+	    	wd = new WatchDog();
 			
     		return true;
     		
