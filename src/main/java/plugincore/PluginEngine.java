@@ -135,7 +135,7 @@ public class PluginEngine {
 			
 			String startmsg = "Initializing Plugin: Region=" + region + " Agent=" + agent + " plugin=" + plugin + " version" + getVersion();
 			clog.log(startmsg);
-			
+			//
 			
 	    	try
 	    	{
