@@ -27,7 +27,10 @@ public class PluginConfig {
 			return false;
 		}
 	}
-	
+	public String getPerfAppName()
+	{
+		return configObj.getString("perfapp");
+	}
 	public Map<String,String> getPluginConfigMap()
 	{
 		final Map<String,String> result=new TreeMap<String,String>();

@@ -21,7 +21,7 @@ public class WatchPerf {
 		  rand = new Random();
 		  startTS = System.currentTimeMillis();
 		  timer = new Timer();
-	      timer.scheduleAtFixedRate(new WatchDogTask(), 500, PluginEngine.config.getWatchDogTimer());
+	      timer.scheduleAtFixedRate(new WatchDogTask(), 1000, PluginEngine.config.getWatchDogTimer());
 	      wdMap = new HashMap<String,String>(); //for sending future WD messages
 	      	  
 	      MsgEvent le = new MsgEvent(MsgEventType.INFO,PluginEngine.config.getRegion(),null,null,"WatchDog timer set to " + PluginEngine.config.getWatchDogTimer() + " milliseconds");
@@ -45,7 +45,7 @@ public class WatchPerf {
 			 le.setParam("src_plugin", PluginEngine.plugin);
 			 le.setParam("dst_region", PluginEngine.region);
 			 le.setParam("isGlobal", "true");
-			 le.setParam("application", "demo_app");
+			 le.setParam("application", PluginEngine.config.getPerfAppName());
 			 le.setParam("perfmetric",PluginEngine.config.getPerfLevel());
 			 //le.setParam("perfmetric",String.valueOf(rand.nextInt(100 - 0 + 1) + 0));
 			 le.setParam("runtime", String.valueOf(runTime));
