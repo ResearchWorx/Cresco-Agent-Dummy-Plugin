@@ -12,7 +12,6 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 
-import core.ControllerEngine;
 import dummyserv.DummyServerEngine;
 import shared.Clogger;
 import shared.MsgEvent;
