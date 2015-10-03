@@ -45,7 +45,8 @@ public class WatchPerf {
 			 le.setParam("src_plugin", PluginEngine.plugin);
 			 le.setParam("dst_region", PluginEngine.region);
 			 le.setParam("isGlobal", "true");
-			 le.setParam("application", PluginEngine.config.getPerfAppName());
+			 le.setParam("resource_id", PluginEngine.config.getResourceId());
+			 le.setParam("inode_id", PluginEngine.config.getINodeId());
 			 le.setParam("perfmetric",PluginEngine.config.getPerfLevel());
 			 //le.setParam("perfmetric",String.valueOf(rand.nextInt(100 - 0 + 1) + 0));
 			 le.setParam("runtime", String.valueOf(runTime));

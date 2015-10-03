@@ -27,10 +27,15 @@ public class PluginConfig {
 			return false;
 		}
 	}
-	public String getPerfAppName()
+	public String getResourceId()
 	{
-		return configObj.getString("perfapp");
+		return configObj.getString("resource_id");
 	}
+	public String getINodeId()
+	{
+		return configObj.getString("inode_id");
+	}
+	 
 	public Map<String,String> getPluginConfigMap()
 	{
 		final Map<String,String> result=new TreeMap<String,String>();
